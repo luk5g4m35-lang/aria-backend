@@ -51,29 +51,31 @@ class EntradaUsuario(BaseModel):
 # 6. El "Puerto de Conexión" para la App
 @app.post("/hablar")
 def hablar_con_aria(entrada: EntradaUsuario):
-    print(f"Mensaje recibido: {entrada.mensaje}")
     historial_de_conversacion.append({"role": "user", "content": entrada.mensaje})
 
     def generador_streaming():
-        respuesta = cliente.messages.create(
-            model="claude-3-opus-20240229", # Asegúrate de que el nombre del modelo sea correcto en inglés
-            max_tokens=800,
-            system=system_prompt,
-            messages=historial_de_conversacion,
-            tools=[herramienta_busqueda],
-            stream=True 
-        )
-        
-        texto_completo = ""
-        
-        for evento in respuesta:
-            if evento.type == "content_block_delta" and evento.delta.type == "text_delta":
-                pedacito = evento.delta.text
-                texto_completo += pedacito
-                yield pedacito 
-        
-        historial_de_conversacion.append({"role": "assistant", "content": texto_completo})
+        try:
+            # Usamos el motor de streaming nativo y blindado de Anthropic
+            with cliente.messages.stream(
+                model="claude-3-haiku-20240307", # <--- EL NÚCLEO MÁS RÁPIDO DEL MUNDO
+                max_tokens=800,
+                system=system_prompt,
+                messages=historial_de_conversacion
+            ) as stream:
+                texto_completo = ""
+                # Transmitimos cada sílaba en tiempo real
+                for texto in stream.text_stream:
+                    texto_completo += texto
+                    yield texto
+                
+                # Guardamos en la memoria cuando termina
+                historial_de_conversacion.append({"role": "assistant", "content": texto_completo})
+                
+        except Exception as e:
+            # Si el servidor colapsa, enviamos el error a la pantalla de tu PC
+            yield f"\n\n[! FALLO DEL NÚCLEO DE LA IA !] Detalles: {str(e)}"
 
+    # Mantenemos la tubería abierta
     return StreamingResponse(generador_streaming(), media_type="text/plain")
     
     # Lógica por si decide usar internet
