@@ -55,9 +55,9 @@ def hablar_con_aria(entrada: EntradaUsuario):
 
     def generador_streaming():
         try:
-            # Usamos el motor de streaming nativo y blindado de Anthropic
+            # Conectando con el núcleo Claude 3.5 Sonnet (Ultrafast + Streaming)
             with cliente.messages.stream(
-                model="claude-3-haiku-20240307", # <--- EL NÚCLEO MÁS RÁPIDO DEL MUNDO
+                model="claude-3-5-sonnet-20241022", # <--- EL CÓDIGO OFICIAL CORRECTO
                 max_tokens=800,
                 system=system_prompt,
                 messages=historial_de_conversacion
