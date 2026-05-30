@@ -55,29 +55,25 @@ def hablar_con_aria(entrada: EntradaUsuario):
     historial_de_conversacion.append({"role": "user", "content": entrada.mensaje})
 
     def generador_streaming():
-        # Llamamos a Claude con el parámetro mágico "stream=True"
         respuesta = cliente.messages.create(
-            model="claude-opus-4-8",
+            model="claude-3-opus-20240229", # Asegúrate de que el nombre del modelo sea correcto en inglés
             max_tokens=800,
             system=system_prompt,
             messages=historial_de_conversacion,
             tools=[herramienta_busqueda],
-            stream=True # <--- ACTIVACIÓN DEL OVERCLOCKING
+            stream=True 
         )
         
         texto_completo = ""
         
-        # Leemos el flujo en vivo y filtramos solo los bloques de texto
         for evento in respuesta:
             if evento.type == "content_block_delta" and evento.delta.type == "text_delta":
                 pedacito = evento.delta.text
                 texto_completo += pedacito
-                yield pedacito # Enviamos la palabra a la PC al instante
+                yield pedacito 
         
-        # Cuando termina de hablar, guardamos su respuesta entera en la memoria
         historial_de_conversacion.append({"role": "assistant", "content": texto_completo})
 
-    # Devolvemos la tubería abierta hacia tu computadora
     return StreamingResponse(generador_streaming(), media_type="text/plain")
     
     # Lógica por si decide usar internet
