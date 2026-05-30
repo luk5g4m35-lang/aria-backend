@@ -7,9 +7,9 @@ from duckduckgo_search import DDGS
 
 app = FastAPI(title="Servidor de Aria")
 
-# Le decimos que busque la clave...
+# Conectando la llave maestra con el nombre correcto de Railway
 cliente = anthropic.Anthropic(
-    api_key=os.environ.get("CLAVE_API_CLAUDE"),
+    api_key=os.environ.get("CLAUDE_API_KEY")
 )
 
 # 3. Memoria y Personalidad
