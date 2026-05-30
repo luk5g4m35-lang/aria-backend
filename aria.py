@@ -55,9 +55,9 @@ def hablar_con_aria(entrada: EntradaUsuario):
 
     def generador_streaming():
         try:
-            # Conectando con el núcleo Claude 3.5 Sonnet (Ultrafast + Streaming)
+            # Volvemos a tu núcleo personalizado, pero mantenemos el Streaming activo
             with cliente.messages.stream(
-                model="claude-3-5-sonnet-20241022", # <--- EL CÓDIGO OFICIAL CORRECTO
+                model="claude-opus-4-8", # <--- EL CÓDIGO QUE USABAS AL PRINCIPIO
                 max_tokens=800,
                 system=system_prompt,
                 messages=historial_de_conversacion
