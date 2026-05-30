@@ -1,14 +1,15 @@
 import anthropic
-import os # <-- Agregamos esto para leer variables de entorno
+import os
+from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from duckduckgo_search import DDGS
 
 app = FastAPI(title="Servidor de Aria")
 
-# Le decimos que busque la clave en la "caja fuerte" de Railway
+# Le decimos que busque la clave...
 cliente = anthropic.Anthropic(
-    api_key=os.environ.get("CLAUDE_API_KEY"), 
+    api_key=os.environ.get("CLAVE_API_CLAUDE"),
 )
 
 # 3. Memoria y Personalidad
